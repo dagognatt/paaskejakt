@@ -1,0 +1,29 @@
+{
+  "name": "paaskerebus",
+  "version": "1.0.0",
+  "main": "dist/index.html",
+  "author": "dagerikhen@gmail.com",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "rm -rf dist && parcel build src/index.html"
+  },
+  "dependencies": {
+    "@types/ol": "^6.4.2",
+    "ol": "^6.5.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "typeface-roboto": "^1.1.13"
+  },
+  "devDependencies": {
+    "@parcel/transformer-image": "2.0.0-beta.2",
+    "@parcel/transformer-sass": "2.0.0-beta.2",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "geojson": "^0.5.0",
+    "parcel": "^2.0.0-beta.2",
+    "prettier": "^2.2.1",
+    "sass": "^1.32.8"
+  }
+}
