@@ -31,10 +31,11 @@ export type Progress = {
 
 export type Step = {
   path: GeojsonFeature
-  goalText: string
+  goalText: string | null
   preamble: string
   goalPosition: [number, number]
-  stepCode: string
+  stepCode: string | null
+  wrongTexts: string[] | null
 }
 
 export class PaaskeRebus {
@@ -79,6 +80,7 @@ export class PaaskeRebus {
     this.loadProgress()
     this.showSteps(this.progress.currentStep)
   }
+  public currentStep = (): Step => steps[this.progress.currentStep]
   private updateNavAccuracy() {
     this.geolocation && this.navAccuracyFeature.setGeometry(this.geolocation.getAccuracyGeometry())
   }
@@ -186,7 +188,7 @@ export class PaaskeRebus {
   }
   public checkGoalDistance(coords: Coordinate) {
     if (this.progress) {
-      const line = new LineString([proj.fromLonLat(steps[this.progress.currentStep].goalPosition), coords])
+      const line = new LineString([proj.fromLonLat(this.currentStep().goalPosition), coords])
       // const f = new Feature(line)
       // f.setStyle(
       //   new Style({
@@ -201,15 +203,20 @@ export class PaaskeRebus {
 
       // console.log(line.getLength())
       const distance = getLength(line)
-      console.log('DISTANCE TO GOAL', distance)
       if (distance < 10) {
-        this.showGoal()
+        if (this.currentStep().stepCode !== null) {
+          this.showGoal()
+        } else {
+          this.nextStep()
+        }
       }
     }
   }
   public showGoal() {
-    document.getElementById('goalCodeInput').style.display = 'block'
-    const goalFeature = new Feature(new Point(proj.fromLonLat(steps[this.progress.currentStep].goalPosition)))
+    if (this.currentStep().stepCode) {
+      document.getElementById('goalCodeInput').style.display = 'block'
+    }
+    const goalFeature = new Feature(new Point(proj.fromLonLat(this.currentStep().goalPosition)))
     goalFeature.setStyle(
       new Style({
         image: new Icon({
@@ -219,13 +226,17 @@ export class PaaskeRebus {
         }),
       })
     )
-    document.getElementById('questText').innerHTML = steps[this.progress.currentStep].goalText
+    document.getElementById('questText').innerHTML = this.currentStep().goalText
     this.stepLayer.getSource().addFeature(goalFeature)
     ReactDOM.render(createElement(GoalCodeInput), document.getElementById('goalCodeInput'))
   }
   public tryCode(code: string) {
-    if (code === steps[this.progress.currentStep].stepCode) {
+    console.log('trying code', code, this.currentStep().stepCode)
+    if (code.toLowerCase() === this.currentStep().stepCode.toLowerCase()) {
       this.nextStep()
+      return true
+    } else {
+      return false
     }
   }
 }

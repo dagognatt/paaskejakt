@@ -43,6 +43,9 @@ html {
     border-radius: 5px;
     font-family: Roboto;
     font-size: 17px;
+    .wrong-text {
+      animation: blinker 2s ease-in-out infinite;
+    }
     .codeinput {
       display: flex;
       // box-shadow: 0 0 10px rgb(0, 0, 0);
@@ -73,7 +76,11 @@ html {
     }
   }
 }
-
+@keyframes blinker {
+  50% {
+    opacity: 0.6;
+  }
+}
 .legend {
   position: absolute;
   display: flex;
